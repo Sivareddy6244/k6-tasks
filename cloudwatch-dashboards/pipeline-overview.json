@@ -1,0 +1,225 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Kinesis", "IncomingRecords", {"stat": "Sum", "label": "Kinesis IncomingRecords"}],
+          ["AWS/Lambda", "Invocations", {"stat": "Sum", "label": "Lambda Invocations"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Pipeline Throughput",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Duration", {"stat": "Average", "label": "Avg Duration"}],
+          ["...", {"stat": "p95", "label": "P95 Duration"}],
+          ["...", {"stat": "p99", "label": "P99 Duration"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Execution Duration",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Milliseconds",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Kinesis", "GetRecords.IteratorAgeMilliseconds", {"stat": "Maximum", "label": "Iterator Age (Max)"}],
+          ["...", {"stat": "Average", "label": "Iterator Age (Avg)"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Kinesis Iterator Age (Processing Lag)",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Milliseconds",
+            "showUnits": false
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Warning Threshold",
+              "value": 60000,
+              "fill": "above",
+              "color": "#ff9900"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 6,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Errors", {"stat": "Sum", "label": "Lambda Errors"}],
+          [".", "Throttles", {"stat": "Sum", "label": "Lambda Throttles"}],
+          ["AWS/Kinesis", "WriteProvisionedThroughputExceeded", {"stat": "Sum", "label": "Kinesis Write Throttles"}],
+          [".", "ReadProvisionedThroughputExceeded", {"stat": "Sum", "label": "Kinesis Read Throttles"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Errors and Throttles",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "ConcurrentExecutions", {"stat": "Maximum", "label": "Max Concurrent"}],
+          ["...", {"stat": "Average", "label": "Avg Concurrent"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Lambda Concurrency",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 12,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Kinesis", "IncomingBytes", {"stat": "Sum", "label": "Incoming Bytes"}]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Kinesis Data Volume",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Bytes",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 18,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Kinesis", "PutRecord.Success", {"stat": "Sum", "label": "Successful Puts"}],
+          [".", "PutRecords.Success", {"stat": "Sum", "label": "Successful PutRecords"}]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Kinesis Success Count",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 18,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          ["AWS/Lambda", "Invocations", {"stat": "Sum", "label": "Total Invocations"}]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Lambda Invocation Count",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 18,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [{"expression": "100 - (m1 / m2 * 100)", "label": "Success Rate %", "id": "e1"}],
+          ["AWS/Lambda", "Errors", {"stat": "Sum", "id": "m1", "visible": false}],
+          [".", "Invocations", {"stat": "Sum", "id": "m2", "visible": false}]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Lambda Success Rate",
+        "period": 300
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 24,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/aws/lambda/YOUR_LAMBDA_FUNCTION_NAME'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Recent Lambda Errors",
+        "view": "table"
+      }
+    }
+  ]
+}
