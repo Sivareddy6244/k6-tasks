@@ -1,0 +1,60 @@
+stages:
+  - test
+
+variables:
+  # AWS Configuration (Set these in GitLab CI/CD variables for security)
+  AWS_REGION: "us-east-1"
+  STREAM_NAME: "DGL_cwLPlayground"
+  AWS_FUNCTION_NAME: "pl-wpl_dgl-playground"
+  
+  # k6 Test Configuration
+  K6_VUS: "10"              # Number of virtual users
+  K6_DURATION: "2m"         # Test duration
+  K6_VERSION: "0.48.0"      # k6 version to install
+
+# Run k6 load test
+k6-load-test:
+  stage: test
+  image: alpine:latest
+  before_script:
+    - echo "Installing k6 version ${K6_VERSION}..."
+    - apk add --no-cache curl tar
+    - curl -L "https://github.com/grafana/k6/releases/download/v${K6_VERSION}/k6-v${K6_VERSION}-linux-amd64.tar.gz" -o k6.tar.gz
+    - tar -xzf k6.tar.gz
+    - mv k6-v${K6_VERSION}-linux-amd64/k6 /usr/local/bin/
+    - rm -rf k6.tar.gz k6-v${K6_VERSION}-linux-amd64
+    - k6 version
+    - echo "==================================================================="
+    - echo "k6 Load Test Configuration"
+    - echo "==================================================================="
+    - echo "AWS Region          = ${AWS_REGION}"
+    - echo "Kinesis Stream      = ${STREAM_NAME}"
+    - echo "Lambda Function     = ${AWS_FUNCTION_NAME}"
+    - echo "Virtual Users       = ${K6_VUS}"
+    - echo "Test Duration       = ${K6_DURATION}"
+    - echo "==================================================================="
+  script:
+    - echo "Starting k6 load test for Kinesis → Lambda pipeline..."
+    - |
+      k6 run \
+        --vus ${K6_VUS} \
+        --duration ${K6_DURATION} \
+        k6-kinesis.js
+    - echo "✅ k6 load test completed successfully"
+  after_script:
+    - echo "Test execution finished. Check artifacts for detailed reports."
+  artifacts:
+    name: "k6-load-test-reports-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - k6-summary.html
+    expire_in: 30 days
+    when: always
+  only:
+    - branches
+  except:
+    - tags
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
